@@ -10,7 +10,7 @@
 - `js/extract.js` — `extract_hints` / `extract_flights` / 机场匹配 / 日期校验的移植
 - `js/docx.js` — `update_docx` / `generate_document` / 监控信息提取的移植（JSZip + DOM）
 - `js/crypto.js` — 数据包 AES-GCM 加解密（WebCrypto，PBKDF2-HMAC-SHA256 210,000 次）
-- `js/app.js` — 界面逻辑：数据加载/解锁、Tesseract.js OCR（chi_sim+eng、psm 6）、本地提取与生成、下载/分享
+- `js/app.js` — 界面逻辑：数据加载/解锁、Tesseract.js OCR（chi_sim 主识别、psm 6，页面打开即预热，识别前缩小+灰度预处理，无航班号时 chi_sim+eng 兜底重识）、本地提取与生成、下载/分享
 - `tools/pack.mjs` — 打包脚本（见下）
 - `tests/` — Node 测试：移植 Python 测试的全部提取用例、文档生成用例、打包往返
 - `data.enc` — 加密数据包（机场库 + 模板 + 监控默认值）。**当前仓库里这份是用演示口令 `test-pass` 打的，发布前务必用自己的口令重打。**
