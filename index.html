@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>航前文档自动更新</title>
+  <style>
+    :root{--navy:#17324d;--blue:#27689f;--sky:#eaf3fa;--line:#d8e2eb;--ink:#182634;--muted:#687b8d;--paper:#fff;--bg:#f3f6f8;--green:#237a57;--red:#b33b3b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    header{background:var(--navy);color:#fff;padding:28px max(24px,calc((100vw - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px}
+    h1{font-size:25px;margin:0 0 7px;letter-spacing:.04em}header p{margin:0;color:#cfdeeb;font-size:13px}.local{border:1px solid #6f8da6;border-radius:20px;padding:7px 12px;font-size:12px;white-space:nowrap}
+    main{max-width:1180px;margin:28px auto 60px;padding:0 24px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}.step{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 15px;color:var(--muted);font-size:13px}.step b{display:inline-grid;place-items:center;width:23px;height:23px;background:var(--sky);color:var(--blue);border-radius:50%;margin-right:8px}
+    .layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 24px rgba(29,55,75,.045)}h2{font-size:16px;margin:0 0 16px;color:var(--navy)}h2 small{font-weight:400;color:var(--muted);margin-left:8px}
+    .drop{position:relative;border:1.5px dashed #9db5c8;background:#f8fbfd;border-radius:12px;min-height:205px;display:grid;place-items:center;text-align:center;padding:20px;cursor:pointer;overflow:hidden}.drop.drag{border-color:var(--blue);background:var(--sky)}.drop input{display:none}.drop strong{display:block;color:var(--blue);margin-bottom:8px}.drop span{font-size:12px;color:var(--muted)}.drop img{display:none;max-width:100%;max-height:260px;border-radius:7px}.drop.has-image img{display:block}.drop.has-image .prompt{display:none}
+    textarea,input[type=text],input[type=password]{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font:inherit;outline:none;transition:border .15s,box-shadow .15s}textarea:focus,input[type=text]:focus,input[type=password]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(39,104,159,.1)}textarea{margin-top:14px;min-height:145px;resize:vertical;padding:12px;font-size:13px;line-height:1.6}input[type=text],input[type=password]{padding:11px 12px;font-size:14px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{margin-bottom:15px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}input[type=text].filled{border-color:#78c39a;background:#f4fbf7}.actions{display:flex;align-items:center;gap:10px;margin-top:14px}button{border:0;border-radius:8px;padding:11px 18px;font:inherit;font-size:13px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.primary{background:var(--blue);color:#fff}.primary:hover{background:#1f5b8d}.secondary{background:var(--sky);color:var(--blue)}.ghost{background:transparent;color:var(--muted)}
+    .airport-head{display:flex;align-items:center;gap:8px;margin:18px 0 9px}.airport-head label{font-size:12px;color:var(--muted)}.airport-head small{font-size:11px;color:var(--muted)}.airports{display:flex;flex-wrap:wrap;gap:8px;max-height:230px;overflow:auto;padding:2px}.airport-chip{display:flex;align-items:center;gap:6px;border:1px solid #b8d3e8;background:var(--sky);border-radius:20px;padding:7px 12px;font-size:13px;color:var(--blue)}.airport-chip small{color:var(--muted);margin:0}.empty{width:100%;color:var(--muted);font-size:13px;padding:18px;text-align:center}
+    .duty-picker{display:flex;flex-wrap:wrap;gap:8px}.duty-chip{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:20px;padding:7px 13px;font-size:13px;cursor:pointer}.duty-chip.active{border-color:var(--blue);background:var(--sky);color:var(--blue);font-weight:600}
+    .monitor-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:18px 0 9px}.monitor-head label{font-size:12px;color:var(--muted)}.monitor-head small{font-size:11px;color:var(--muted)}.monitor-input{min-height:88px;margin-top:0;font-size:12px;line-height:1.55}.monitor-input.filled{border-color:#78c39a;background:#f4fbf7}
+    .auto{width:100%;padding:15px;font-size:16px;font-weight:700;margin-top:14px;background:var(--green)}.auto:hover{background:#1d6b4b}.generate{width:100%;padding:14px;font-size:15px;font-weight:600;margin-top:14px}.status{min-height:20px;margin-top:12px;font-size:12px;color:var(--muted);line-height:1.5}.status.error{color:var(--red)}.result{display:none;margin-top:16px;padding:15px;border:1px solid #b9d9ca;background:#f0f9f5;border-radius:9px}.result.show{display:block}.result strong{display:block;color:var(--green);margin-bottom:10px}.result-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.download-btn{display:block;background:var(--sky);color:var(--blue);border-radius:8px;padding:11px;text-align:center;text-decoration:none;font-size:13px;word-break:break-word}.save{background:var(--green);color:#fff}.mobile-help{display:none;color:var(--muted);font-size:12px;line-height:1.6;margin-top:10px}.note{font-size:12px;color:var(--muted);line-height:1.7;margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+    .gate{position:fixed;inset:0;background:rgba(23,50,77,.55);display:grid;place-items:center;z-index:60;padding:16px}.gate-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:420px;width:100%;box-shadow:0 18px 50px rgba(10,25,40,.35)}.gate-card h2{margin-bottom:10px}.gate-card p{font-size:13px;color:var(--muted);line-height:1.65;margin:0 0 14px}.gate-card button{width:100%;margin-top:12px}
+    @media(max-width:800px){header{padding:22px 18px}h1{font-size:22px}main{margin:16px auto 40px;padding:0 12px}.layout{grid-template-columns:1fr;gap:14px}.steps{display:none}.panel{padding:16px;border-radius:12px}.row{grid-template-columns:1fr;gap:0}.local{display:none}.drop{min-height:150px}.airport-head{align-items:flex-start;flex-direction:column}.airports{max-height:250px}.generate{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 5px 18px rgba(39,104,159,.28)}.mobile-help{display:block}.result-actions{grid-template-columns:1fr}.note{font-size:13px}}
+  </style>
+</head>
+<body>
+<header><div><h1>航前文档自动更新</h1><p>手机上传航班截图，生成并保存规范 Word</p></div><div class="local">纯网页运行 · 数据不离开本机</div></header>
+<main>
+  <section class="steps"><div class="step"><b>1</b>上传截图，一键识别</div><div class="step"><b>2</b>自动匹配机场与细则</div><div class="step"><b>3</b>生成并保存 Word</div></section>
+  <div class="layout">
+    <section class="panel">
+      <h2>航班截图 <small>支持 PNG / JPG，最大 20 MB</small></h2>
+      <label class="drop" id="drop"><input type="file" id="file" accept="image/*"><div class="prompt"><div><strong>点击从手机相册选择航班截图</strong><span>在本机浏览器内识别处理，不上传任何服务器</span></div></div><img id="preview" alt="航班截图预览"></label>
+      <textarea id="ocrText" placeholder="识别文字会出现在这里，可直接修改。"></textarea>
+      <button class="auto" id="autoBtn">一键识别并生成 Word</button>
+      <p class="note">点一下即可完成：识别截图 → 自动填日期/航班号 → 自动匹配机场细则 → 生成 Word。你只需在下面对结果做校对。</p>
+    </section>
+    <section class="panel">
+      <h2>生成信息 <small>带 * 为必填</small></h2>
+      <div class="field" id="dutyField" style="display:none"><label>识别到多个航班日期</label><div class="duty-picker" id="dutyPicker"></div></div>
+      <div class="row"><div class="field"><label for="date">日期 *</label><input type="text" id="date" placeholder="例如：2026.10.25"></div><div class="field"><label for="flights">航班号（航线）*</label><input type="text" id="flights" placeholder="例如：1813、1814，2303、2304"></div></div>
+      <div class="airport-head"><label>执飞机场 <small>已自动匹配（按航线顺序）</small></label></div>
+      <div class="airports" id="airports"><div class="empty">选择截图后自动匹配机场</div></div>
+      <div class="monitor-head"><label>监控信息 <small>一类 / 二类</small></label><small>预填模板原文，可编辑</small></div>
+      <div class="field"><label for="firstClass">一类信息</label><textarea class="monitor-input" id="firstClass" placeholder="一类信息（每行一条）"></textarea></div>
+      <div class="field"><label for="secondClass">二类信息</label><textarea class="monitor-input" id="secondClass" placeholder="二类信息（每行一条）"></textarea></div>
+      <button class="primary generate" id="generateBtn">重新生成（用当前信息）</button>
+      <div class="status" id="status">模板中的个人信息、自我评价及近期重要文件将保持不变。</div>
+      <div class="result" id="result"><strong>文档已生成，请下载后复核</strong><div class="result-actions"><a class="download-btn" id="download" href="#">下载 Word</a><button class="save" id="shareBtn">保存 / 分享 Word</button></div><div class="mobile-help">iPhone：点“保存 / 分享 Word”，在分享菜单中选择“存储到文件”，或选择 Word 打开。</div></div>
+      <p class="note">自动化负责减少重复整理，不替代机组对运行资料、有效性和适用性的检查。机场细则请在幕布更新后同步更新本地机场库。</p>
+    </section>
+  </div>
+</main>
+<div class="gate" id="gate" style="display:none">
+  <div class="gate-card">
+    <h2>输入数据口令</h2>
+    <p>本站点的机场库与 Word 模板已加密。请输入打包时设置的口令，在本机解密后使用；口令与数据都不会上传。</p>
+    <input type="password" id="passphrase" placeholder="数据口令" autocomplete="current-password">
+    <button class="primary" id="unlockBtn">解锁</button>
+    <div class="status" id="gateStatus"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
